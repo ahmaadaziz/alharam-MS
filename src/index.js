@@ -6,6 +6,7 @@ const cookieParser = require("cookie-parser");
 
 // Route Imports
 const userRoutes = require("./routes/user");
+const residentRoutes = require("./routes/resident");
 
 const app = express();
 
@@ -22,6 +23,7 @@ app.use(
 
 //Route Mounts
 app.use(userRoutes);
+app.use(residentRoutes);
 
 app.listen(process.env.PORT, () => {
   console.log(`Server is up on ${process.env.PORT}`);

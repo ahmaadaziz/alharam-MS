@@ -12,7 +12,10 @@ const recordSchema = new mongoose.Schema(
     wapda: {
       type: Number,
     },
-    mr: {
+    totalMR: {
+      type: Number,
+    },
+    newMR: {
       type: Number,
     },
     ebill: {
@@ -25,7 +28,7 @@ const recordSchema = new mongoose.Schema(
       type: Number,
     },
     arrears: {
-      type: Number,
+      type: String,
     },
     totalBill: {
       type: Number,
@@ -50,6 +53,28 @@ const recordSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+//Methods on instance
+recordSchema.methods.calculateBill = (
+  baseFee,
+  package,
+  wifi,
+  arrears,
+  fine,
+  previousMR
+) => {
+  this.ebill = 0;
+  this.totalMR = this.wapda + this.ups;
+  this.newMR = totalMR - previousMR;
+  const overUnits = newMR - 17;
+  if (overUnits > 0) {
+    this.ebill = (overUnits / 30) * this.attendance * 36;
+    if (this.ebill > 3000) {
+      this.ebill = this.ebill + (2.5 * ebill) / 100;
+    }
+  }
+  this.totalBill = baseFee + wifi + +arrears + fine + ebill + package;
+};
 
 const Record = mongoose.model("Record", recordSchema);
 
