@@ -24,6 +24,10 @@ const residentSchema = new mongoose.Schema({
     required: [true, "Please Provide Package fee"],
   },
   records: [{ type: mongoose.Schema.Types.ObjectId, ref: "Record" }],
+  active: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const Resident = mongoose.model("Resident", residentSchema);

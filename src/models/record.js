@@ -5,6 +5,7 @@ const recordSchema = new mongoose.Schema(
     owner: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Resident",
+      required: true,
     },
     ups: {
       type: Number,
