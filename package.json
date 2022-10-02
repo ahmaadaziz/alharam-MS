@@ -6,7 +6,9 @@
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/index.js",
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "seedResidents": "cross-env NODE_ENV=development node src/seeder/SeedResidents.js",
+    "seedRecords": "cross-env NODE_ENV=development node src/seeder/SeedRecords.js"
   },
   "author": "Ahmad Aziz",
   "license": "ISC",
@@ -18,6 +20,7 @@
     "bcrypt": "^5.0.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dayjs": "^1.11.5",
     "dotenv": "^16.0.1",
     "dotenv-flow": "^3.2.0",
     "express": "^4.18.1",
