@@ -7,6 +7,9 @@ const recordSchema = new mongoose.Schema(
       ref: "Resident",
       required: true,
     },
+    new: {
+      type: Boolean,
+    },
     ups: {
       type: Number,
     },
@@ -16,7 +19,13 @@ const recordSchema = new mongoose.Schema(
     totalMR: {
       type: Number,
     },
+    PMR: {
+      type: Number,
+    },
     newMR: {
+      type: Number,
+    },
+    overUnits: {
       type: Number,
     },
     ebill: {
@@ -31,7 +40,16 @@ const recordSchema = new mongoose.Schema(
     arrears: {
       type: String,
     },
+    nxtFine: {
+      type: Number,
+    },
+    nxtArrears: {
+      type: String,
+    },
     totalBill: {
+      type: Number,
+    },
+    adjustment: {
       type: Number,
     },
     amountPaid: {
@@ -49,6 +67,26 @@ const recordSchema = new mongoose.Schema(
     collectionDate: {
       type: Date,
     },
+    paid: {
+      type: Boolean,
+      default: false,
+    },
+    collected: {
+      type: Boolean,
+      default: false,
+    },
+    clearance: {
+      type: Boolean,
+    },
+    clearanceDate: {
+      type: Date,
+    },
+    pkgAdj: {
+      type: String,
+    },
+    notice: {
+      type: Boolean,
+    },
   },
   {
     timestamps: true,
@@ -57,24 +95,39 @@ const recordSchema = new mongoose.Schema(
 
 //Methods on instance
 recordSchema.methods.calculateBill = (
+  ups,
+  wapda,
+  attendance,
+  totalAttendance,
   baseFee,
   package,
   wifi,
   arrears,
   fine,
-  previousMR
+  previousMR,
+  record
 ) => {
-  this.ebill = 0;
-  this.totalMR = this.wapda + this.ups;
-  this.newMR = totalMR - previousMR;
-  const overUnits = newMR - 17;
-  if (overUnits > 0) {
-    this.ebill = (overUnits / 30) * this.attendance * 36;
-    if (this.ebill > 3000) {
-      this.ebill = this.ebill + (2.5 * ebill) / 100;
+  record.ebill = 0;
+  record.totalMR = wapda + ups;
+  record.newMR = record.totalMR - previousMR;
+  record.overUnits = record.newMR - 17;
+  if (record.overUnits > 0) {
+    record.ebill = (record.overUnits / totalAttendance) * attendance * 36;
+    if (record.ebill > 3000) {
+      record.ebill = record.ebill + (2.5 * record.ebill) / 100;
     }
+  } else {
+    record.overUnits = 0;
   }
-  this.totalBill = baseFee + wifi + +arrears + fine + ebill + package;
+  record.totalBill = baseFee + wifi + +arrears + fine + record.ebill + package;
+  return {
+    ebill: Math.floor(record.ebill),
+    totalBill: Math.floor(record.totalBill),
+    newMR: Math.floor(record.newMR),
+    overUnits: Math.floor(record.overUnits),
+    totalMR: Math.floor(record.totalMR),
+    overUnits: Math.floor(record.overUnits),
+  };
 };
 
 const Record = mongoose.model("Record", recordSchema);
