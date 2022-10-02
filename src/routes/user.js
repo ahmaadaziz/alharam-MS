@@ -1,5 +1,6 @@
 const express = require("express");
 const User = require("../models/user");
+const Tab = require("../models/tab");
 const auth = require("../middleware/auth");
 const router = new express.Router();
 
@@ -57,6 +58,29 @@ router.post("/users/logout", auth, async (req, res) => {
     res.send();
   } catch (error) {
     res.status(500).send(error);
+  }
+});
+
+router.get("/users", auth, async (req, res) => {
+  try {
+    const users = await User.find({}, { _id: 1, name: 1 });
+    res.status(200).json(users);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+});
+
+router.get("/users/:id", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id).populate({
+      path: "tabs",
+      model: Tab,
+    });
+    res.status(200).json(user);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
   }
 });
 

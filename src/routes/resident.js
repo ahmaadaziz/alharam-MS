@@ -1,4 +1,5 @@
 const express = require("express");
+const dayjs = require("dayjs");
 const Resident = require("../models/resident");
 const Record = require("../models/record");
 const auth = require("../middleware/auth");
@@ -6,86 +7,183 @@ const router = new express.Router();
 
 router.post("/residents", auth, async (req, res) => {
   try {
-    const newResident = new Resident(req.body);
+    const newResident = new Resident({
+      name: req.body.name,
+      room: req.body.room,
+      fee: req.body.fee,
+      wifi: req.body.wifi,
+      package: req.body.package,
+      joined: req.body.joined,
+      security: req.body.security,
+    });
+    var newRecord = {};
+    if (req.body.meter) {
+      newRecord = new Record({
+        owner: newResident._id,
+        nxtArrears: req.body.arrears,
+        nxtFine: req.body.fine,
+        totalMR: req.body.meter,
+        new: true,
+      });
+    } else {
+      const otherResidents = await Resident.find({
+        room: req.body.room,
+        active: true,
+      }).populate("records");
+      if (otherResidents.length > 0) {
+        newRecord = new Record({
+          owner: newResident._id,
+          nxtArrears: req.body.arrears,
+          nxtFine: req.body.fine,
+          new: true,
+          totalMR:
+            otherResidents[0].records[otherResidents[0].records.length - 1]
+              .totalMR,
+        });
+      } else {
+        newRecord = new Record({
+          owner: newResident._id,
+          nxtArrears: req.body.arrears,
+          nxtFine: req.body.fine,
+          new: true,
+          totalMR: 0,
+        });
+      }
+    }
+    newResident.records.push(newRecord._id);
+    await newRecord.save();
     await newResident.save();
-    res.status(200).json({ newResident });
+    res.status(200).json(newResident);
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
   }
 });
 
-router.post("/records", async (req, res) => {
+router.post("/residents/clearance", auth, async (req, res) => {
   try {
-    if (!req.body) {
-      return res.status(400).send("Missing Owner ID");
+    console.log("this ran");
+    const resident = await Resident.findById(req.body.id).populate("records");
+    if (!resident) {
+      return res.status(404).send("Resident not found.");
     }
-    const newRecord = new Record(req.body);
-    await newRecord.save();
-    return res.status(200).json(newRecord);
+    var clearanceRecord = {};
+    if (!resident.records[resident.records.length - 1].ebill) {
+      clearanceRecord = await Record.findById(
+        resident.records[resident.records.length - 1]._id
+      );
+      const previousRecord = resident.records[resident.records.length - 2];
+      clearanceRecord.notice = req.body.notice;
+      clearanceRecord.clearance = true;
+      clearanceRecord.clearanceDate = dayjs().format("YYYY-MM-DD");
+      const billValues = clearanceRecord.calculateBill(
+        req.body.ups,
+        req.body.wapda,
+        req.body.attendance,
+        resident.fee,
+        resident.package,
+        resident.wifi,
+        clearanceRecord.arrears,
+        clearanceRecord.fine,
+        previousRecord.totalMR
+      );
+      Object.assign(clearanceRecord, billValues);
+    } else {
+      const previousRecord = resident.records[resident.records.length - 1];
+      clearanceRecord = new Record({
+        owner: resident._id,
+        arrears: previousRecord.nxtArrears,
+        fine: previousRecord.nxtFine,
+        clearance: true,
+        clearanceDate: dayjs().format("YYYY-MM-DD"),
+      });
+      resident.records.push(clearanceRecord._id);
+      clearanceRecord.notice = req.body.notice;
+      const billValues = clearanceRecord.calculateBill(
+        req.body.ups,
+        req.body.wapda,
+        req.body.attendance,
+        resident.fee,
+        resident.package,
+        resident.wifi,
+        clearanceRecord.arrears,
+        clearanceRecord.fine,
+        previousRecord.totalMR
+      );
+      Object.assign(clearanceRecord, billValues);
+    }
+    const updatedValues = resident.generateClearance(clearanceRecord, resident);
+    Object.assign(clearanceRecord, updatedValues);
+    // console.log(clearanceRecord);
+    resident.active = false;
+    clearanceRecord.save();
+    resident.save();
+    res.status(200).json(clearanceRecord);
   } catch (e) {
     console.log(e);
+    res.status(400).send(e);
   }
 });
 
-router.post("/residents/calculateBill/:id:rid", auth, async (req, res) => {
+router.post("/residents/calculateBill", auth, async (req, res) => {
   try {
-    const resident = await Resident.findById(req.params.id).populate("records");
-    if (!resident) {
-      return res.status(404).send("Resident not found");
+    const values = req.body.values;
+    for (const value of values) {
+      const resident = await Resident.findById(value.id).populate("records");
+      var totalAttendance = value.attendance;
+      for (const valueAtt of values) {
+        const otherRecord = await Record.findById(valueAtt.rid).populate(
+          "owner"
+        );
+        if (
+          otherRecord.owner.name !== resident.name &&
+          otherRecord.owner.room === resident.room
+        ) {
+          totalAttendance += valueAtt.attendance;
+        }
+        otherRecord.attendance = valueAtt.attendance;
+        otherRecord.save();
+      }
+      const newRecord = await Record.findById(value.rid);
+      if (!newRecord) {
+        return res.status(404).send("Record not found");
+      }
+      const previousRecord = resident.records[resident.records.length - 2];
+      const billValues = newRecord.calculateBill(
+        value.ups,
+        value.wapda,
+        value.attendance,
+        totalAttendance,
+        resident.fee,
+        resident.package,
+        resident.wifi,
+        newRecord.arrears,
+        newRecord.fine,
+        previousRecord.totalMR,
+        newRecord
+      );
+      Object.assign(newRecord, billValues);
+      newRecord.attendance = value.attendance;
+      newRecord.ups = value.ups;
+      newRecord.wapda = value.wapda;
+      await newRecord.save();
     }
-    const previousRecord = resident.records[resident.records.length - 2];
-    const newRecord = await Record.findById(req.params.rid);
-    if (!newRecord) {
-      return res.status(404).send("Record not found");
-    }
-    newRecord.calculateBill(
-      resident.fee,
-      resident.package,
-      resident.wifi,
-      previousRecord.arrears,
-      previousRecord.fine,
-      previousRecord.totalMR
-    );
-    resident.records.push(newRecord._id);
-    await resident.save();
-    await newRecord.save();
-    res.status(200).json(newRecord);
+    res.status(200).json("Succesfull");
   } catch (error) {
     res.status(400).send(error);
   }
 });
 
-router.get("/records/latest", auth, async (req, res) => {
-  function partition(array, callback) {
-    return array.reduce(
-      function (result, element, i) {
-        callback(element, i, array)
-          ? result[0].push(element)
-          : result[1].push(element);
-
-        return result;
-      },
-      [[], []]
-    );
-  }
+router.get("/residents", auth, async (req, res) => {
   try {
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth();
-    const fromDate = new Date(year, month - 2, 1);
-    const records = await Record.find({
-      createdAt: { $gte: fromDate, $lt: new Date() },
-    }).populate("owner");
-    if (!records || records.length === 0) {
-      return res.status(404).send("No records found");
+    const resident = await Resident.findById(req.query.id).populate("records");
+    if (!resident) {
+      return res.status(404).send("No resident found");
     }
-    const [newRecords, oldRecords] = partition(
-      records,
-      (record) => record.createdAt.getMonth() === new Date().getMonth()
-    );
-    return res.status(200).json({ newRecords, oldRecords });
-  } catch (error) {
-    console.log(error);
+    res.status(200).json(resident);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
   }
 });
 
