@@ -6,14 +6,18 @@ const dayjs = require("dayjs");
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { UnSetUser, AllUsers } = useContext(GlobalContext);
+  const { UnSetUser } = useContext(GlobalContext);
 
   const ToAddResident = () => {
-    navigate(`/resident/add`);
+    navigate(`/residents/add`);
   };
 
-  const ToUser = (id) => {
-    navigate(`/user/${id}`);
+  const ToAllUsers = () => {
+    navigate(`/users`);
+  };
+
+  const ToAllResidents = () => {
+    navigate(`/residents`);
   };
 
   const ToAllRecords = () => {
@@ -32,15 +36,18 @@ const Navbar = () => {
   return (
     <div className="flex flex-col msm:flex-row justify-start msm:justify-between items-center p-4 h-max border-b-2 border-white ">
       <div className="flex flex-col msm:flex-row justify-between items-center">
-        {AllUsers.map((user, index) => (
-          <button
-            key={index}
-            className="px-5 py-2 text-xl border-2 bg-green-700 text-white uppercase m-5 msm:mr-5 "
-            onClick={() => ToUser(user._id)}
-          >
-            {user?.name.toUpperCase()}
-          </button>
-        ))}
+        <button
+          className="px-5 py-2 text-xl border-2 bg-green-700 text-white uppercase m-5 msm:mr-5 "
+          onClick={() => ToAllUsers()}
+        >
+          All Users
+        </button>
+        <button
+          className="px-5 py-2 text-xl border-2 bg-green-700 text-white uppercase m-5 msm:mr-5 "
+          onClick={() => ToAllResidents()}
+        >
+          All Residents
+        </button>
       </div>
       <div className="flex flex-col msm:flex-row justify-center items-center">
         <button

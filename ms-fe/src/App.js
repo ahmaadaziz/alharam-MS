@@ -8,6 +8,8 @@ import Resident from "./pages/Resident";
 import AddResident from "./pages/AddResident";
 import UserPage from "./pages/UserPage";
 import Fee from "./pages/Fee";
+import AllUsers from "./pages/AllUsers";
+import AllResidents from "./pages/AllResidents";
 import axios from "axios";
 
 function App() {
@@ -61,22 +63,32 @@ function App() {
           </Route>
           <Route
             exact
-            path="/resident/:id"
+            path="/residents"
+            element={User ? <AllResidents /> : <Navigate to="/" />}
+          />
+          <Route
+            exact
+            path="/residents/:id"
             element={User ? <Resident /> : <Navigate to="/" />}
           />
           <Route
             exact
-            path="/resident/add"
+            path="/residents/add"
             element={User ? <AddResident /> : <Navigate to="/" />}
           />
           <Route
             exact
-            path="/resident/fee/:id"
+            path="/residents/fee/:id"
             element={User ? <Fee /> : <Navigate to="/" />}
           />
           <Route
             exact
-            path="/user/:id"
+            path="/users"
+            element={User ? <AllUsers /> : <Navigate to="/" />}
+          />
+          <Route
+            exact
+            path="/users/:id"
             element={User ? <UserPage /> : <Navigate to="/" />}
           />
         </Routes>

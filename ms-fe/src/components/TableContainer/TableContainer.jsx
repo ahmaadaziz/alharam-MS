@@ -1,26 +1,12 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import Table from "../Table/Table";
 import axios from "axios";
+import useSearch from "../../Hooks/useSearch";
 const dayjs = require("dayjs");
 
 const TableContainer = ({ table, render }) => {
-  const [filtered, setFiltered] = useState([]);
   const [search, setSearch] = useState("");
-
-  useMemo(() => {
-    var filtered = [];
-    if (!isFinite(search)) {
-      filtered = table.filter(
-        (record) =>
-          record.owner.name.toLowerCase().indexOf(search.toLowerCase()) > -1
-      );
-    } else {
-      filtered = table.filter(
-        (record) => record.owner.room.indexOf(search) > -1
-      );
-    }
-    setFiltered(filtered);
-  }, [search, table]);
+  const filtered = useSearch(table, search);
 
   const HandleSubmit = (e) => {
     e.preventDefault();

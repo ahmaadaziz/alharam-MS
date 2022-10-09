@@ -60,8 +60,8 @@ const ResidentRow = ({ record }) => {
         </td>
       )}
       {record.paid ? (
-        <td className="border-collapse border-2 border-black text-center">
-          {record.paidTo}
+        <td className="border-collapse border-2 border-black text-center uppercase whitespace-nowrap">
+          {record.paidTo.name}
         </td>
       ) : (
         <td className="border-collapse border-2 border-black text-center">
