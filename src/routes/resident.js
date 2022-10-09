@@ -61,6 +61,7 @@ router.post("/residents", auth, async (req, res) => {
 });
 
 router.post("/residents/clearance", auth, async (req, res) => {
+  console.log(req.body, "BODY!");
   try {
     console.log("this ran");
     const resident = await Resident.findById(req.body.id).populate("records");
@@ -68,34 +69,20 @@ router.post("/residents/clearance", auth, async (req, res) => {
       return res.status(404).send("Resident not found.");
     }
     var clearanceRecord = {};
-    if (!resident.records[resident.records.length - 1].ebill) {
+    if (!resident.records[resident.records.length - 1].paid) {
       clearanceRecord = await Record.findById(
         resident.records[resident.records.length - 1]._id
       );
-      const previousRecord = resident.records[resident.records.length - 2];
       clearanceRecord.notice = req.body.notice;
       clearanceRecord.clearance = true;
-      clearanceRecord.clearanceDate = dayjs().format("YYYY-MM-DD");
-      const billValues = clearanceRecord.calculateBill(
-        req.body.ups,
-        req.body.wapda,
-        req.body.attendance,
-        resident.fee,
-        resident.package,
-        resident.wifi,
-        clearanceRecord.arrears,
-        clearanceRecord.fine,
-        previousRecord.totalMR
-      );
       Object.assign(clearanceRecord, billValues);
     } else {
       const previousRecord = resident.records[resident.records.length - 1];
       clearanceRecord = new Record({
         owner: resident._id,
         arrears: previousRecord.nxtArrears,
-        fine: previousRecord.nxtFine,
+        fine: previousRecord.nxtFine ? previousRecord.nxtFine : 0,
         clearance: true,
-        clearanceDate: dayjs().format("YYYY-MM-DD"),
       });
       resident.records.push(clearanceRecord._id);
       clearanceRecord.notice = req.body.notice;
@@ -103,18 +90,20 @@ router.post("/residents/clearance", auth, async (req, res) => {
         req.body.ups,
         req.body.wapda,
         req.body.attendance,
+        req.body.totalAttendance,
         resident.fee,
         resident.package,
         resident.wifi,
         clearanceRecord.arrears,
         clearanceRecord.fine,
-        previousRecord.totalMR
+        previousRecord.totalMR,
+        clearanceRecord
       );
       Object.assign(clearanceRecord, billValues);
     }
     const updatedValues = resident.generateClearance(clearanceRecord, resident);
     Object.assign(clearanceRecord, updatedValues);
-    // console.log(clearanceRecord);
+    resident.clearanceDate = dayjs().format("YYYY-MM-DD");
     resident.active = false;
     clearanceRecord.save();
     resident.save();
@@ -176,11 +165,27 @@ router.post("/residents/calculateBill", auth, async (req, res) => {
 
 router.get("/residents", auth, async (req, res) => {
   try {
-    const resident = await Resident.findById(req.query.id).populate("records");
+    const resident = await Resident.findById(req.query.id).populate({
+      path: "records",
+      populate: { path: "paidTo", select: "name" },
+    });
     if (!resident) {
       return res.status(404).send("No resident found");
     }
     res.status(200).json(resident);
+  } catch (e) {
+    console.log(e);
+    res.status(400).send(e);
+  }
+});
+
+router.get("/residents/all", auth, async (req, res) => {
+  try {
+    const residents = await Resident.find();
+    if (residents.length === 0) {
+      return res.status(404).send("No resident found");
+    }
+    res.status(200).json(residents);
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
