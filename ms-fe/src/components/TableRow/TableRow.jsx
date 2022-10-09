@@ -11,7 +11,7 @@ const TableRow = ({ resident, record, render, users }) => {
   const [date, setDate] = useState();
 
   const ToPrintChallan = () => {
-    navigate(`../resident/fee/${record._id}`);
+    navigate(`../residents/fee/${record._id}`);
   };
 
   const SubmitPayment = () => {
@@ -56,7 +56,7 @@ const TableRow = ({ resident, record, render, users }) => {
           record.clearance ? "text-red-600" : "text-blue-600"
         } uppercase`}
       >
-        <Link to={`../resident/${resident._id}`}>{resident.name}</Link>
+        <Link to={`../residents/${resident._id}`}>{resident.name}</Link>
       </td>
       <td className="border-collapse border-2 border-black text-center">
         {resident.room}

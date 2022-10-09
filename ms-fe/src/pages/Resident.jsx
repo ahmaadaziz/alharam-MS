@@ -11,6 +11,7 @@ const Resident = () => {
   const [ups, SetUps] = useState("");
   const [wapda, SetWapda] = useState("");
   const [attendance, SetAttendance] = useState("");
+  const [ttlAttendance, SetTtlAttendance] = useState("");
   const [notice, SetNotice] = useState(false);
   const [render, SetRender] = useState(false);
   const { id } = useParams();
@@ -29,6 +30,7 @@ const Resident = () => {
           ups,
           wapda,
           attendance,
+          totalAttendance: ttlAttendance,
           notice,
         },
         {
@@ -159,7 +161,7 @@ const Resident = () => {
                 type={"number"}
                 className="text-black"
                 value={ups}
-                onChange={(e) => SetUps(e.target.value)}
+                onChange={(e) => SetUps(e.target.valueAsNumber)}
               />
               <label htmlFor="wapda">WAPDA</label>
               <input
@@ -167,7 +169,7 @@ const Resident = () => {
                 type={"number"}
                 className="text-black"
                 value={wapda}
-                onChange={(e) => SetWapda(e.target.value)}
+                onChange={(e) => SetWapda(e.target.valueAsNumber)}
               />
               <label htmlFor="attendance">ATTENDANCE</label>
               <input
@@ -175,7 +177,15 @@ const Resident = () => {
                 type={"number"}
                 className="text-black"
                 value={attendance}
-                onChange={(e) => SetAttendance(e.target.value)}
+                onChange={(e) => SetAttendance(e.target.valueAsNumber)}
+              />
+              <label htmlFor="tattendance">TOTAL ATTENDANCE</label>
+              <input
+                id="tattendance"
+                type={"number"}
+                className="text-black"
+                value={ttlAttendance}
+                onChange={(e) => SetTtlAttendance(e.target.valueAsNumber)}
               />
               <div className="flex flex-row items-center mt-3">
                 <input
