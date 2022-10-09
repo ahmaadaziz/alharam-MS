@@ -37,6 +37,9 @@ const residentSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  clearanceDate: {
+    type: Date,
+  },
 });
 
 //Methods on Instance
