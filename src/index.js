@@ -1,5 +1,6 @@
 require("dotenv-flow").config();
 require("./db/mongoose");
+const path = require("path");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
@@ -27,11 +28,17 @@ app.use(
   })
 );
 
+app.use(express.static(path.join(__dirname, "../ms-fe/build")));
+
 //Route Mounts
 app.use(userRoutes);
 app.use(residentRoutes);
 app.use(recordRoutes);
 app.use(tabRoutes);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../ms-fe/build/index.html"));
+});
 
 const CreateRecords = new CronJob(
   "* 00 3 24 * *",
