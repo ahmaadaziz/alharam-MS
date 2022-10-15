@@ -22,6 +22,9 @@ function App() {
           `${process.env.REACT_APP_API_URL}users/login-auto`,
           {},
           {
+            headers: {
+              Authorization: "Bearer " + localStorage.getItem("token"),
+            },
             withCredentials: true,
           }
         )

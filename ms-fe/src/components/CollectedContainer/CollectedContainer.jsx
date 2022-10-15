@@ -9,6 +9,9 @@ const CollectedContainer = ({ id }) => {
     const GetTabs = () => {
       axios
         .get(`${process.env.REACT_APP_API_URL}tabs/${id}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((res) => setCollected(res.data))

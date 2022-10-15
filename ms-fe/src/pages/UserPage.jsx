@@ -13,6 +13,9 @@ const UserPage = () => {
     const GetUser = () => {
       axios
         .get(`${process.env.REACT_APP_API_URL}users/${id}`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((res) => {
