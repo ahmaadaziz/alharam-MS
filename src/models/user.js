@@ -10,12 +10,15 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
-  collected: [{ type: mongoose.Schema.Types.ObjectId, ref: "Record" }],
-  tab: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tab" }],
+  tabs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Tab" }],
   email: {
     type: String,
-    unique: [true, "Email alraedy used"],
-    required: true,
+    // unique: [true, "Email already used"],
+    index: {
+      unique: true,
+      partialFilterExpression: { email: { $type: "string" } },
+    },
+    // required: true,
     trim: true,
     lowercase: true,
     validate(value) {
@@ -26,6 +29,7 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
+    // required: [true, "Please Provide a password"],
     trim: true,
   },
 });
@@ -69,7 +73,6 @@ userSchema.methods.generateAuthToken = async function () {
 userSchema.statics.findByCredentials = async (email, password) => {
   const user = await User.findOne({ email });
   if (!user) throw new Error("No user found with this email");
-  await user.populate("favourites");
   const isMatch = await bcrypt.compare(password, user.password);
   if (!isMatch) {
     throw new Error("Incorrect email/password");

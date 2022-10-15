@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const dayjs = require("dayjs");
 
 const residentSchema = new mongoose.Schema({
   name: {
@@ -23,8 +24,45 @@ const residentSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please Provide Package fee"],
   },
+  joined: {
+    type: Date,
+    required: [true, "Please Provide Joining Date"],
+  },
+  security: {
+    type: Number,
+    required: [true, "Please Provide Security Amount"],
+  },
   records: [{ type: mongoose.Schema.Types.ObjectId, ref: "Record" }],
+  active: {
+    type: Boolean,
+    default: true,
+  },
+  clearanceDate: {
+    type: Date,
+  },
 });
+
+//Methods on Instance
+residentSchema.methods.generateClearance = (record, resident) => {
+  if (resident.package > 0) {
+    const stay = dayjs(resident.joined).diff(dayjs(), "month");
+    if (stay > 10) {
+      record.pkgAdj = stay * -resident.package;
+      record.totalBill = record.totalBill + record.pkgAdj;
+    }
+  } else {
+    const stay = dayjs(resident.joined).diff(dayjs(), "month");
+    if (stay < 10) {
+      record.pkgAdj = stay * 3000;
+      record.totalBill = record.totalBill + record.pkgAdj;
+    }
+    if (!record.notice) {
+      record.totalBill = record.totalBill + 2 * resident.fee;
+    }
+  }
+  record.totalBill -= resident.security;
+  return record;
+};
 
 const Resident = mongoose.model("Resident", residentSchema);
 
