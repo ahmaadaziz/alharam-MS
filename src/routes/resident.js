@@ -61,9 +61,7 @@ router.post("/residents", auth, async (req, res) => {
 });
 
 router.post("/residents/clearance", auth, async (req, res) => {
-  console.log(req.body, "BODY!");
   try {
-    console.log("this ran");
     const resident = await Resident.findById(req.body.id).populate("records");
     if (!resident) {
       return res.status(404).send("Resident not found.");
