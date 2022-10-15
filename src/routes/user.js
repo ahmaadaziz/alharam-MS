@@ -9,8 +9,7 @@ router.post("/users", async (req, res) => {
     const newUser = new User(req.body);
     await newUser.save();
     const token = await newUser.generateAuthToken();
-    res.cookie("auth", token);
-    res.status(200).json({ newUser });
+    res.status(200).json({ newUser, token });
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
@@ -39,13 +38,13 @@ router.post("/users/login/", async (req, res) => {
       throw new Error({ message: "Invalid email/password" });
     }
     const token = await user.generateAuthToken();
-    res.cookie("auth", token, {
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      secure: process.env.NODE_ENV === "production",
-      ...(req.body.remember && { maxAge: process.env.JWT_EXPIRES_IN }),
-      httpOnly: true,
-    });
-    res.send(user);
+    // res.cookie("auth", token, {
+    //   sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    //   secure: process.env.NODE_ENV === "production",
+    //   ...(req.body.remember && { maxAge: process.env.JWT_EXPIRES_IN }),
+    //   httpOnly: true,
+    // });
+    res.send({ user, token });
   } catch (error) {
     console.log(error);
     res.status(400).json(error);
@@ -54,8 +53,8 @@ router.post("/users/login/", async (req, res) => {
 
 router.post("/users/logout", auth, async (req, res) => {
   try {
-    res.clearCookie("auth");
-    res.send();
+    // res.clearCookie("auth");
+    res.redirect("/");
   } catch (error) {
     res.status(500).send(error);
   }

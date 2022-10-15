@@ -8,7 +8,10 @@
     "dev": "cross-env NODE_ENV=development nodemon src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "seedResidents": "cross-env NODE_ENV=development node src/seeder/SeedResidents.js",
-    "seedRecords": "cross-env NODE_ENV=development node src/seeder/SeedRecords.js"
+    "seedRecords": "cross-env NODE_ENV=development node src/seeder/SeedRecords.js",
+    "reactInstall": "npm --prefix ./ms-fe/ install",
+    "reactBuild": "npm --prefix ./ms-fe/ run build",
+    "build": "npm run reactInstall && npm run reactBuild && npm start"
   },
   "author": "Ahmad Aziz",
   "license": "ISC",

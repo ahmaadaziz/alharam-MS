@@ -21,6 +21,9 @@ const Records = () => {
     const GetPageCount = () => {
       axios
         .get(`${process.env.REACT_APP_API_URL}records/pages-count`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((res) => {

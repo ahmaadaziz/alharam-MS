@@ -108,7 +108,6 @@ recordSchema.methods.calculateBill = (
   record.totalMR = +wapda + +ups;
   record.newMR = record.totalMR - previousMR;
   record.overUnits = record.newMR - 17;
-  console.log(record.totalMR, record.newMR, record.overUnits);
   if (record.overUnits >= 0) {
     record.ebill = (record.overUnits / totalAttendance) * attendance * 36;
     if (record.ebill > 3000) {
@@ -117,7 +116,6 @@ recordSchema.methods.calculateBill = (
   } else {
     record.overUnits = 0;
   }
-  console.log(baseFee, wifi, arrears, fine, record.ebill, package);
   record.totalBill = baseFee + wifi + +arrears + fine + record.ebill + package;
   return {
     ebill: Math.floor(record.ebill),

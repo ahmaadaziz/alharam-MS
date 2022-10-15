@@ -25,10 +25,16 @@ const Navbar = () => {
   };
 
   const handleClick = () => {
+    localStorage.removeItem("token");
     axios.post(
       `${process.env.REACT_APP_API_URL}users/logout`,
       {},
-      { withCredentials: true }
+      {
+        headers: {
+          Authorization: "Bearer " + localStorage.getItem("token"),
+        },
+        withCredentials: true,
+      }
     );
     UnSetUser();
   };
