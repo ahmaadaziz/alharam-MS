@@ -11,10 +11,14 @@
     "seedRecords": "cross-env NODE_ENV=development node src/seeder/SeedRecords.js",
     "reactInstall": "npm --prefix ./ms-fe/ install",
     "reactBuild": "npm --prefix ./ms-fe/ run build",
-    "build": "npm run reactInstall && npm run reactBuild && npm start"
+    "heroku-postbuild": "npm run reactInstall && npm run reactBuild"
   },
   "author": "Ahmad Aziz",
   "license": "ISC",
+  "engines": {
+    "npm": ">=8.15.1",
+    "node": ">=17.5.0"
+  },
   "devDependencies": {
     "cross-env": "^7.0.3",
     "nodemon": "^2.0.19"

@@ -59,7 +59,7 @@ const CreateRecords = new CronJob(
   "Asia/Karachi"
 );
 
-app.listen(process.env.PORT, () => {
+app.listen(process.env.PORT || 5000, () => {
   CreateRecords.start();
   console.log(`Server is up on ${process.env.PORT}`);
 });
