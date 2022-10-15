@@ -28,7 +28,12 @@ const TableContainer = ({ table, render }) => {
       .post(
         `${process.env.REACT_APP_API_URL}residents/calculateBill`,
         { values: values },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
       )
       .then(() => {
         render((current) => !current);

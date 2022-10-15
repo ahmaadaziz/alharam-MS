@@ -25,10 +25,18 @@ const Fee = () => {
 
   const MakeAdjustment = () => {
     axios
-      .post(`${process.env.REACT_APP_API_URL}records/adjustment`, {
-        id,
-        adjustment,
-      })
+      .post(
+        `${process.env.REACT_APP_API_URL}records/adjustment`,
+        {
+          id,
+          adjustment,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        }
+      )
       .then((response) => {
         if (response.status === 200) {
           SetRecord(response.data);
@@ -43,6 +51,9 @@ const Fee = () => {
         .get(`${process.env.REACT_APP_API_URL}records`, {
           params: {
             id,
+          },
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
           },
           withCredentials: true,
         })

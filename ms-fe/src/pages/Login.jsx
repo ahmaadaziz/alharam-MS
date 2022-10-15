@@ -24,7 +24,8 @@ const Login = () => {
         }
       )
       .then((response) => {
-        SetUser(response.data);
+        SetUser(response.data.user);
+        localStorage.setItem("token", response.data.token);
         navigate("/dashboard");
       })
       .catch((_error) => {

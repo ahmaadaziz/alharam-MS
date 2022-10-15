@@ -13,6 +13,9 @@ const Collected = ({ data, setRender }) => {
           id: data._id,
         },
         {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         }
       )
