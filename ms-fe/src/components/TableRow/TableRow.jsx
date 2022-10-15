@@ -28,7 +28,12 @@ const TableRow = ({ resident, record, render, users }) => {
           paidVia,
           amountPaid,
         },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
       )
       .then(() => {
         render((current) => !current);
@@ -42,7 +47,12 @@ const TableRow = ({ resident, record, render, users }) => {
         {
           id: record._id,
         },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
       )
       .then(() => {
         render((current) => !current);

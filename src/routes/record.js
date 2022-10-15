@@ -25,7 +25,7 @@ router.post("/records", async (req, res) => {
   }
 });
 
-router.post("/records/adjustment", async (req, res) => {
+router.post("/records/adjustment", auth, async (req, res) => {
   try {
     const record = await Record.findById(req.body.id).populate("owner");
     if (!record) {

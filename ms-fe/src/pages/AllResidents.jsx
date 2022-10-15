@@ -14,6 +14,9 @@ const AllResidents = () => {
     const getResidents = () => {
       axios
         .get(`${process.env.REACT_APP_API_URL}residents/all`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((res) => setResidents(res.data))

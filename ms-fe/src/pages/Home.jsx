@@ -22,6 +22,9 @@ const Home = () => {
     const getRecords = () => {
       axios
         .get(`${process.env.REACT_APP_API_URL}records/latest`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((response) => {
@@ -42,6 +45,9 @@ const Home = () => {
     const GetAllUsers = () => {
       axios
         .get(`${process.env.REACT_APP_API_URL}users`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((response) => SetAllUsers(response.data))

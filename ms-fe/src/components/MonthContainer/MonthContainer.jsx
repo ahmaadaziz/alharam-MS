@@ -9,6 +9,9 @@ const MonthContainer = ({ monthName, year, month }) => {
       axios
         .get(`${process.env.REACT_APP_API_URL}records/bymonth`, {
           params: { month, year },
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         })
         .then((response) => {

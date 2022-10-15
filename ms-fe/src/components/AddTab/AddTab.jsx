@@ -15,7 +15,12 @@ const AddTab = ({ id }) => {
           amount,
           owner: id,
         },
-        { withCredentials: true }
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
       )
       .then((res) => {
         if (res.status === 200) {

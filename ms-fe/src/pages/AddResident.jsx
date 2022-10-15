@@ -34,6 +34,9 @@ const AddResident = () => {
           fine,
         },
         {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         }
       )

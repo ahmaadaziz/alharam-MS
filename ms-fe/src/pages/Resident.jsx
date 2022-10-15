@@ -34,6 +34,9 @@ const Resident = () => {
           notice,
         },
         {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
           withCredentials: true,
         }
       )
@@ -50,6 +53,9 @@ const Resident = () => {
         .get(`${process.env.REACT_APP_API_URL}residents`, {
           params: {
             id,
+          },
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
           },
           withCredentials: true,
         })
