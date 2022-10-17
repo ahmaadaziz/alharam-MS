@@ -61,7 +61,7 @@ router.post("/records/submit-payment", auth, async (req, res) => {
   if (difference > 0) {
     record.nxtFine = difference * 30;
   }
-  if (user.name === "akhtar aziz") {
+  if (user.name === "akhter aziz") {
     record.collected = true;
   } else {
     const newTab = new Tab({ owner: req.body.paidTo, record: record._id });
