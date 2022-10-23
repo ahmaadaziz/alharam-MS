@@ -73,7 +73,7 @@ router.post("/records/submit-payment", auth, async (req, res) => {
   const dueDate = new Date(
     dayjs(record.createdAt).year(),
     dayjs(record.createdAt).month() + 1,
-    5
+    7
   );
   const difference = dayjs(req.body.date).diff(dueDate, "day");
   if (difference > 0) {
