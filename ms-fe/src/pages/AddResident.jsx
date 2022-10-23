@@ -199,7 +199,7 @@ const AddResident = () => {
               id="arrears"
               className=" w-fit p-2 text-black "
               value={arrears}
-              onChange={(e) => SetArrears(e.target.valueAsNumber)}
+              onChange={(e) => SetArrears(e.target.value)}
             />
 
             <label htmlFor="fine" className=" text-2xl mr-2 ">
