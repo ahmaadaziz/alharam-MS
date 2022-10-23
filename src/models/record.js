@@ -10,24 +10,6 @@ const recordSchema = new mongoose.Schema(
     new: {
       type: Boolean,
     },
-    ups: {
-      type: Number,
-    },
-    wapda: {
-      type: Number,
-    },
-    totalMR: {
-      type: Number,
-    },
-    PMR: {
-      type: Number,
-    },
-    newMR: {
-      type: Number,
-    },
-    overUnits: {
-      type: Number,
-    },
     ebill: {
       type: Number,
     },
@@ -101,29 +83,34 @@ recordSchema.methods.calculateBill = (
   wifi,
   arrears,
   fine,
-  previousMR,
+  room,
   record
 ) => {
   record.ebill = 0;
-  record.totalMR = +wapda + +ups;
-  record.newMR = record.totalMR - previousMR;
-  record.overUnits = record.newMR - 17;
-  if (record.overUnits >= 0) {
-    record.ebill = (record.overUnits / totalAttendance) * attendance * 36;
-    if (record.ebill > 3000) {
-      record.ebill = record.ebill + (2.5 * record.ebill) / 100;
+  const totalMR = +wapda + +ups;
+  room.newMR = totalMR - room.totalMR;
+  room.overUnits = room.newMR - process.env.FREE_UNITS;
+  if (room.overUnits >= 0) {
+    const reb = room.overUnits * process.env.UNIT_RATE;
+    if (reb > 3000) {
+      reb = reb + (2.5 * reb) / 100;
     }
+    record.ebill = (reb / totalAttendance) * attendance;
   } else {
-    record.overUnits = 0;
+    room.overUnits = 0;
   }
+  room.totalMR = totalMR;
   record.totalBill = baseFee + wifi + +arrears + fine + record.ebill + package;
   return {
-    ebill: Math.floor(record.ebill),
-    totalBill: Math.floor(record.totalBill),
-    newMR: Math.floor(record.newMR),
-    overUnits: Math.floor(record.overUnits),
-    totalMR: Math.floor(record.totalMR),
-    overUnits: Math.floor(record.overUnits),
+    roomValues: {
+      newMR: Math.floor(room.newMR),
+      overUnits: Math.floor(room.overUnits),
+      totalMR: Math.floor(room.totalMR),
+    },
+    recordValues: {
+      ebill: Math.floor(record.ebill),
+      totalBill: Math.floor(record.totalBill),
+    },
   };
 };
 
