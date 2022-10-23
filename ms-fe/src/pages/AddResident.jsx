@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton/BackButton";
 import axios from "axios";
@@ -6,18 +6,37 @@ import axios from "axios";
 const AddResident = () => {
   const navigate = useNavigate();
   const [name, SetName] = useState("");
-  const [room, SetRoom] = useState("");
+  const [room, SetRoom] = useState(false);
+  const [availableRooms, setAvailableRooms] = useState([]);
   const [fee, SetFee] = useState("");
   const [wifi, SetWifi] = useState(300);
   const [pkg, SetPackage] = useState("");
   const [security, SetSecurity] = useState("");
   const [joined, SetJoined] = useState("");
-  const [meter, SetMeter] = useState("");
+  const [seats, setSeats] = useState("");
   const [arrears, SetArrears] = useState("");
   const [fine, SetFine] = useState("");
 
+  useEffect(() => {
+    const getFreeRooms = () => {
+      axios
+        .get(`${process.env.REACT_APP_API_URL}rooms/free`, {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+        })
+        .then((res) => setAvailableRooms(res.data))
+        .catch((err) => console.error(err));
+    };
+    getFreeRooms();
+  }, []);
+
   const HandleSubmit = (e) => {
     e.preventDefault();
+    if (!room) {
+      window.alert("Please make space first.");
+      navigate("../../");
+    }
     axios
       .post(
         `${process.env.REACT_APP_API_URL}residents`,
@@ -29,7 +48,7 @@ const AddResident = () => {
           package: pkg,
           security,
           joined,
-          ...(meter && { meter: meter }),
+          seats,
           arrears,
           fine,
         },
@@ -46,7 +65,13 @@ const AddResident = () => {
           navigate("../../");
         }
       })
-      .catch((err) => console.error(err));
+      .catch((err) => {
+        console.error(err);
+        if (err.response.status === 406) {
+          window.alert("Not enough space in room");
+        }
+        console.error(err);
+      });
   };
 
   return (
@@ -70,14 +95,25 @@ const AddResident = () => {
             <label htmlFor="room" className=" text-2xl mr-2 ">
               Room:
             </label>
-            <input
-              required
-              type="number"
-              id="room"
-              className=" w-fit p-2 text-black "
-              value={room}
-              onChange={(e) => SetRoom(e.target.valueAsNumber)}
-            />
+            {availableRooms.length > 0 ? (
+              <select
+                name="room"
+                id="room"
+                className=" w-fit p-2 text-black "
+                onChange={(e) => {
+                  SetRoom(e.target.value);
+                }}
+              >
+                <option value={false}>--Select Room--</option>
+                {availableRooms?.map((room, i) => (
+                  <option key={i} value={room._id}>
+                    {room.number + "-" + room.freeSeats}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p>No rooms available. Please make space first.</p>
+            )}
 
             <label htmlFor="fee" className=" text-2xl mr-2 ">
               fee:
@@ -112,6 +148,7 @@ const AddResident = () => {
               className=" w-fit p-2 text-black "
               onChange={(e) => SetWifi(e.target.value)}
             >
+              <option value="0">No Device</option>
               <option value="300">Mobile</option>
               <option value="600">Laptop</option>
               <option value="900">Mobile + Laptop</option>
@@ -142,15 +179,15 @@ const AddResident = () => {
               onChange={(e) => SetSecurity(e.target.valueAsNumber)}
             />
 
-            <label htmlFor="meter" className=" text-2xl mr-2 ">
-              Previous Meter:
+            <label htmlFor="seats" className=" text-2xl mr-2 ">
+              Seats:
             </label>
             <input
               type="number"
-              id="meter"
+              id="seats"
               className=" w-fit p-2 text-black "
-              value={meter}
-              onChange={(e) => SetMeter(e.target.valueAsNumber)}
+              value={seats}
+              onChange={(e) => setSeats(e.target.valueAsNumber)}
             />
 
             <label htmlFor="arrears" className=" text-2xl mr-2 ">

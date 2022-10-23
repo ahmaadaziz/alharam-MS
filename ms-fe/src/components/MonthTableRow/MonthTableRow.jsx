@@ -8,7 +8,7 @@ const MonthTableRow = ({ resident, record }) => {
         {resident.name}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {resident.room}
+        {resident.room.number}
       </td>
       <td className="border-collapse border-2 border-black text-center">
         {resident.fee}

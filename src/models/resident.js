@@ -7,9 +7,10 @@ const residentSchema = new mongoose.Schema({
     required: [true, "Please Provide Name of Resident"],
     trim: true,
   },
-  room: {
-    type: String,
-    required: [true, "Please Provide Room Number"],
+  room: { type: mongoose.Schema.Types.ObjectId, ref: "Room" },
+  seats: {
+    type: Number,
+    required: [true, "Please provide number of seats taken"],
   },
   fee: {
     type: Number,

@@ -25,6 +25,24 @@ router.post("/records", async (req, res) => {
   }
 });
 
+router.post("/records/create", async (req, res) => {
+  try {
+    const residents = await Resident.find({ active: true }).populate("records");
+    for (const resident of residents) {
+      const newRecord = new Record({ owner: resident._id });
+      newRecord.arrears =
+        resident.records[resident.records.length - 1].nxtArrears;
+      newRecord.fine = resident.records[resident.records.length - 1].nxtFine;
+      resident.records.push(newRecord._id);
+      await newRecord.save();
+      await resident.save();
+    }
+    res.status(200).send();
+  } catch (e) {
+    console.log(e);
+  }
+});
+
 router.post("/records/adjustment", auth, async (req, res) => {
   try {
     const record = await Record.findById(req.body.id).populate("owner");
@@ -55,7 +73,7 @@ router.post("/records/submit-payment", auth, async (req, res) => {
   const dueDate = new Date(
     dayjs(record.createdAt).year(),
     dayjs(record.createdAt).month() + 1,
-    5
+    7
   );
   const difference = dayjs(req.body.date).diff(dueDate, "day");
   if (difference > 0) {
@@ -99,7 +117,9 @@ router.post("/records/remove-fine", auth, async (req, res) => {
 
 router.get("/records", auth, async (req, res) => {
   try {
-    const record = await Record.findById(req.query.id).populate("owner");
+    const record = await Record.findById(req.query.id).populate([
+      { path: "owner", populate: { path: "room", select: "number" } },
+    ]);
     if (!record) {
       return res.status(404).send("No record found");
     }
@@ -131,7 +151,10 @@ router.get("/records/latest", auth, async (req, res) => {
         { createdAt: { $gte: fromDate, $lt: new Date() } },
         { new: { $exists: false } },
       ],
-    }).populate(["owner", { path: "paidTo", select: "name" }]);
+    }).populate([
+      { path: "owner", populate: { path: "room", select: "number" } },
+      { path: "paidTo", select: "name" },
+    ]);
     if (!records || records.length === 0) {
       return res.status(404).json(["No records found"]);
     }
@@ -163,7 +186,10 @@ router.get("/records/bymonth", auth, async (req, res) => {
         { createdAt: { $gte: fromDate, $lt: toDate } },
         { new: { $exists: false } },
       ],
-    }).populate("owner");
+    }).populate({
+      path: "owner",
+      populate: { path: "room", select: "number" },
+    });
     if (!records || records.length === 0) {
       return res.status(404).send("No records found");
     }
