@@ -195,7 +195,7 @@ const AddResident = () => {
             </label>
             <input
               required
-              type="number"
+              type={"text"}
               id="arrears"
               className=" w-fit p-2 text-black "
               value={arrears}
