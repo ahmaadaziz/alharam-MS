@@ -37,6 +37,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(process.env.PORT || 5000, () => {
-  CreateRecords.start();
   console.log(`Server is up on ${process.env.PORT}`);
 });
