@@ -68,7 +68,7 @@ const FeeTable = ({ copy, record }) => {
             <p>Room</p>
           </td>
           <td className="border-collapse border-2 border-black text-center">
-            {record?.owner?.room}
+            {record?.owner?.room?.number}
           </td>
         </tr>
         {record?.owner?.package > 0 ? (

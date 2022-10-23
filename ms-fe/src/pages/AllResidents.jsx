@@ -19,7 +19,10 @@ const AllResidents = () => {
           },
           withCredentials: true,
         })
-        .then((res) => setResidents(res.data))
+        .then((res) => {
+          console.log(res.data);
+          setResidents(res.data);
+        })
         .catch((err) => console.error(err));
     };
     getResidents();
@@ -76,7 +79,7 @@ const AllResidents = () => {
                       </Link>
                     </td>
                     <td className="border-collapse border-2 border-black text-center">
-                      {resident.room}
+                      {resident?.room?.number}
                     </td>
                     <td className="border-collapse border-2 border-black text-center">
                       {resident.active ? (

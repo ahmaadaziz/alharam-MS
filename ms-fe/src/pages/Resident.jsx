@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import BackButton from "../components/BackButton/BackButton";
 import ResidentTable from "../components/ResidentTable/ResidentTable";
+import RoomForm from "../components/RoomForm/RoomForm";
 import axios from "axios";
 const dayjs = require("dayjs");
 
 const Resident = () => {
   const [resident, SetResident] = useState({});
-  const [form, SetForm] = useState(false);
+  const [clearanceForm, SetClearanceForm] = useState(false);
+  const [edit, setEdit] = useState(false);
+  const [seats, setSeats] = useState("");
+  const [roomForm, SetRoomForm] = useState(false);
   const [ups, SetUps] = useState("");
   const [wapda, SetWapda] = useState("");
   const [attendance, SetAttendance] = useState("");
@@ -16,8 +20,27 @@ const Resident = () => {
   const [render, SetRender] = useState(false);
   const { id } = useParams();
 
-  const OpenForm = () => {
-    SetForm((current) => !current);
+  const HandleClick = () => {
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}residents/changeseats`,
+        {
+          resident,
+          seats,
+        },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
+      )
+      .then((res) => {
+        setEdit(false);
+        SetResident(res.data);
+        window.alert("Successfully changed seats.");
+      })
+      .catch((err) => window.alert(err.response.data));
   };
 
   const HandleSubmit = (e) => {
@@ -59,7 +82,10 @@ const Resident = () => {
           },
           withCredentials: true,
         })
-        .then((res) => SetResident(res.data))
+        .then((res) => {
+          setSeats(res.data.seats);
+          SetResident(res.data);
+        })
         .catch((err) => SetResident({}));
     };
     GetResident();
@@ -77,7 +103,40 @@ const Resident = () => {
             </p>
             <p className=" text-3xl mb-3">
               Room:{" "}
-              <span className="underline font-semibold">{resident?.room}</span>
+              <span className="underline font-semibold">
+                {resident?.room?.number}
+              </span>
+            </p>
+            <p className=" text-3xl mb-3">
+              Seats:{" "}
+              {edit ? (
+                <input
+                  id="seats"
+                  type={"number"}
+                  className=" w-16 text-black"
+                  value={seats}
+                  onChange={(e) => setSeats(e.target.valueAsNumber)}
+                />
+              ) : (
+                <span className="underline font-semibold">
+                  {resident?.seats}
+                </span>
+              )}{" "}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-8 h-8 inline cursor-pointer"
+                onClick={() => setEdit((current) => !current)}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10"
+                />
+              </svg>
             </p>
             <p className=" text-3xl mb-3">
               Fee:{" "}
@@ -147,18 +206,39 @@ const Resident = () => {
             ) : (
               ""
             )}
+            {edit ? (
+              <input
+                className="px-5 py-2 mt-4 text-2xl border-2 bg-green-600 text-white uppercase mr-5 "
+                type="button"
+                value="Save"
+                onClick={HandleClick}
+              />
+            ) : null}
           </div>
         </div>
-        <div className={`mt-16 mr-20 ${resident?.active ? "" : "hidden"}`}>
+        <div
+          className={`mt-16 mr-20 ml-20 ${resident?.active ? "" : "hidden"}`}
+        >
           <button
-            className="px-5 py-2 text-2xl border-2 bg-black text-white uppercase mr-5 "
-            onClick={OpenForm}
+            className="px-5 py-2 text-2xl border-2 bg-black text-white uppercase mr-5 ml-5 my-5 "
+            onClick={() => SetRoomForm((current) => !current)}
+          >
+            Change Room
+          </button>
+          <RoomForm
+            roomForm={roomForm}
+            currentResident={resident}
+            setCurrentResident={SetResident}
+          />
+          <button
+            className="px-5 py-2 text-2xl border-2 bg-black text-white uppercase mr-5 ml-5 my-5 "
+            onClick={() => SetClearanceForm((current) => !current)}
           >
             Clearance
           </button>
           <form
             onSubmit={HandleSubmit}
-            className={`mt-5 ${form ? "" : "hidden"}`}
+            className={`mx-5 my-7 border-t-2  ${clearanceForm ? "" : "hidden"}`}
           >
             <div className="flex flex-col">
               <label htmlFor="ups">UPS</label>

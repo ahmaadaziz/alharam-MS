@@ -69,7 +69,7 @@ const TableRow = ({ resident, record, render, users }) => {
         <Link to={`../residents/${resident._id}`}>{resident.name}</Link>
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {resident.room}
+        {resident.room.number}
       </td>
       <td className="border-collapse border-2 border-black text-center">
         {resident.fee}

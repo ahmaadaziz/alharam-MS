@@ -10,6 +10,8 @@ import UserPage from "./pages/UserPage";
 import Fee from "./pages/Fee";
 import AllUsers from "./pages/AllUsers";
 import AllResidents from "./pages/AllResidents";
+import Rooms from "./pages/Rooms";
+import AddRoom from "./pages/AddRoom";
 import axios from "axios";
 
 function App() {
@@ -93,6 +95,16 @@ function App() {
             exact
             path="/users/:id"
             element={User ? <UserPage /> : <Navigate to="/" />}
+          />
+          <Route
+            exact
+            path="/rooms"
+            element={User ? <Rooms /> : <Navigate to="/" />}
+          />
+          <Route
+            exact
+            path="/rooms/add"
+            element={User ? <AddRoom /> : <Navigate to="/" />}
           />
         </Routes>
       </div>

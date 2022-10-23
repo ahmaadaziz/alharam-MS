@@ -8,6 +8,13 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { UnSetUser } = useContext(GlobalContext);
 
+  const ToAllRooms = () => {
+    navigate(`/rooms`);
+  };
+  const ToAddRoom = () => {
+    navigate(`/rooms/add`);
+  };
+
   const ToAddResident = () => {
     navigate(`/residents/add`);
   };
@@ -54,8 +61,20 @@ const Navbar = () => {
         >
           All Residents
         </button>
+        <button
+          className="px-5 py-2 text-xl border-2 bg-green-700 text-white uppercase m-5 msm:mr-5 "
+          onClick={() => ToAllRooms()}
+        >
+          All Rooms
+        </button>
       </div>
       <div className="flex flex-col msm:flex-row justify-center items-center">
+        <button
+          className="px-5 py-2 text-xl border-2 bg-blue-700 text-white uppercase m-5 msm:mr-5 "
+          onClick={ToAddRoom}
+        >
+          New Room
+        </button>
         <button
           className="px-5 py-2 text-xl border-2 bg-blue-700 text-white uppercase m-5 msm:mr-5 "
           onClick={ToAddResident}
