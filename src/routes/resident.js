@@ -109,15 +109,19 @@ router.post("/residents/calculateBill", auth, async (req, res) => {
   try {
     const values = req.body.values;
     for (const value of values) {
-      const resident = await Resident.findById(value.id).populate("records");
+      const resident = await Resident.findById(value.id).populate([
+        "records",
+        "room",
+      ]);
       var totalAttendance = value.attendance;
       for (const valueAtt of values) {
-        const otherRecord = await Record.findById(valueAtt.rid).populate(
-          "owner"
-        );
+        const otherRecord = await Record.findById(valueAtt.rid).populate({
+          path: "owner",
+          populate: { path: "room", select: "number" },
+        });
         if (
           otherRecord.owner.name !== resident.name &&
-          otherRecord.owner.room === resident.room
+          otherRecord.owner.room.number === resident.room.number
         ) {
           totalAttendance += valueAtt.attendance;
         }
