@@ -64,7 +64,6 @@ const Resident = () => {
         }
       )
       .then((res) => {
-        console.log(res);
         SetRender((current) => !current);
       })
       .catch((err) => console.log(err));

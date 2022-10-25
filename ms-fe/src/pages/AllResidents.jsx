@@ -20,7 +20,6 @@ const AllResidents = () => {
           withCredentials: true,
         })
         .then((res) => {
-          console.log(res.data);
           setResidents(res.data);
         })
         .catch((err) => console.error(err));

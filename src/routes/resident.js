@@ -251,14 +251,12 @@ router.get("/residents", auth, async (req, res) => {
 
 router.get("/residents/all", auth, async (req, res) => {
   try {
-    const residents = await Resident.find().populate({
-      path: "room",
-      options: { sort: [["number", "asc"]] },
-    });
+    const residents = await Resident.find().populate({ path: "room" });
     if (residents.length === 0) {
       return res.status(404).send("No resident found");
     }
-    res.status(200).json(residents);
+    const sorted = residents.sort((a, b) => a.room.number - b.room.number);
+    res.status(200).json(sorted);
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
