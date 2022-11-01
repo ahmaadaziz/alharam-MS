@@ -19,6 +19,18 @@ const recordSchema = new mongoose.Schema(
     fine: {
       type: Number,
     },
+    ups: {
+      type: Number,
+    },
+    wapda: {
+      type: Number,
+    },
+    newMR: {
+      type: Number,
+    },
+    overUnits: {
+      type: Number,
+    },
     arrears: {
       type: String,
     },
@@ -91,7 +103,7 @@ recordSchema.methods.calculateBill = (
   room.newMR = totalMR - room.totalMR;
   room.overUnits = room.newMR - process.env.FREE_UNITS;
   if (room.overUnits >= 0) {
-    const reb = room.overUnits * process.env.UNIT_RATE;
+    var reb = room.overUnits * process.env.UNIT_RATE;
     if (reb > 3000) {
       reb = reb + (2.5 * reb) / 100;
     }

@@ -156,6 +156,10 @@ router.post("/residents/calculateBill", auth, async (req, res) => {
         room.newMR = roomValues.newMR;
         room.save();
       }
+      newRecord.ups = value.ups;
+      newRecord.wapda = value.wapda;
+      newRecord.overUnits = roomValues.overUnits;
+      newRecord.newMR = roomValues.newMR;
       await newRecord.save();
     }
     res.status(200).json("Succesfull");
