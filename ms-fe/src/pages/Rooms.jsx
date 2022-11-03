@@ -1,13 +1,52 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import BackButton from "../components/BackButton/BackButton";
+import MeterTable from "../components/MeterTable/MeterTable";
 import useSearch from "../Hooks/useSearch";
 import axios from "axios";
 
 const Rooms = () => {
+  const navigate = useNavigate();
   const [rooms, setRooms] = useState([]);
   const [search, setSearch] = useState("");
   const filtered = useSearch(rooms, search);
+
+  const HandleSubmit = (e) => {
+    e.preventDefault();
+    let values = [];
+    for (
+      let index = 0;
+      index < e.target.elements.length - 1;
+      index = index + 2
+    ) {
+      console.log(typeof +e.target.elements[index].value);
+      console.log(typeof +e.target.elements[index + 1].value);
+      values.push({
+        id: +e.target.elements[index].id,
+        wapda: +e.target.elements[index].value,
+        ups: +e.target.elements[index + 1].value,
+      });
+    }
+
+    axios
+      .post(
+        `${process.env.REACT_APP_API_URL}rooms/meter`,
+        { values: values },
+        {
+          headers: {
+            Authorization: "Bearer " + localStorage.getItem("token"),
+          },
+          withCredentials: true,
+        }
+      )
+      .then(() => {
+        window.alert("Completed");
+        navigate("../");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
 
   useEffect(() => {
     const getRooms = () => {
@@ -27,7 +66,7 @@ const Rooms = () => {
   return (
     <div>
       <BackButton url="../" />
-      <h1 className="w-full text-center text-3xl m-4">All Rooms</h1>
+      <h1 className="text-center text-3xl m-4">All Rooms</h1>
       <div className=" flex flex-col justify-center items-start ml-2 mb-2">
         <label htmlFor="resident" className="text-2xl mb-1">
           Search
@@ -89,6 +128,17 @@ const Rooms = () => {
               : null}
           </tbody>
         </table>
+      </div>
+      <h1 className="text-center text-3xl m-4">Add Meter Readings</h1>
+      <div className="overflow-x-auto">
+        <form onSubmit={HandleSubmit} className="flex flex-col mt-4 mb-5">
+          <MeterTable rooms={rooms} />
+          <input
+            type={"submit"}
+            value={"Update"}
+            className=" m-2 p-3 bg-slate-700 uppercase text-2xl rounded cursor-pointer "
+          />
+        </form>
       </div>
     </div>
   );

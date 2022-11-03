@@ -8,7 +8,8 @@ const TableRow = ({ resident, record, render, users }) => {
   const [amountPaid, setAmountPaid] = useState("");
   const [paidTo, setPaidTo] = useState(users[0]?._id);
   const [paidVia, setPaidVia] = useState("cash");
-  const [date, setDate] = useState();
+  const [info, setInfo] = useState("");
+  const [date, setDate] = useState("");
 
   const ToPrintChallan = () => {
     navigate(`../residents/fee/${record._id}`);
@@ -18,6 +19,7 @@ const TableRow = ({ resident, record, render, users }) => {
     if (!amountPaid || !paidTo || !paidVia || !date) {
       return window.alert("Please fill all fields");
     }
+    console.log(info);
     axios
       .post(
         `${process.env.REACT_APP_API_URL}records/submit-payment`,
@@ -27,6 +29,7 @@ const TableRow = ({ resident, record, render, users }) => {
           paidTo,
           paidVia,
           amountPaid,
+          ...(info && { info: info }),
         },
         {
           headers: {
@@ -80,59 +83,43 @@ const TableRow = ({ resident, record, render, users }) => {
       <td className="border-collapse border-2 border-black text-center">
         {resident.package}
       </td>
-      <td className="border-collapse border-2 border-black text-center">
-        {record.arrears}
-      </td>
-      <td className="border-collapse border-2 border-black text-center px-2 text-xl">
-        <p>{record.fine}</p>
-        {!record.fine || record.fine === 0 ? null : (
-          <button type={"button"} onClick={RemoveFine}>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={1.5}
-              stroke="currentColor"
-              className="w-full h-10 text-red-600 "
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-        )}
-      </td>
-      {record.ebill || record.ebill === 0 ? null : (
-        <td className="border-collapse border-2 border-black text-center min-w-min">
-          <input
-            name="ups"
-            id={resident._id}
-            rid={record._id}
-            type={"text"}
-            className="text-black w-full"
-            required
-          />
-        </td>
-      )}
-      {record.ebill || record.ebill === 0 ? null : (
+      {record.attendance || record.attendance === 0 ? (
         <td className="border-collapse border-2 border-black text-center">
-          <input
-            name="wapda"
-            id={resident._id}
-            rid={record._id}
-            type={"text"}
-            className="text-black w-full"
-            required
-          />
+          {record.arrears}
         </td>
+      ) : (
+        ""
       )}
-      {record.ebill || record.ebill === 0 ? null : (
+      {record.attendance || record.attendance === 0 ? (
+        <td className="border-collapse border-2 border-black text-center px-2 text-xl">
+          <p>{record.fine}</p>
+          {!record.fine || record.fine === 0 ? null : (
+            <button type={"button"} onClick={RemoveFine}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="w-full h-10 text-red-600 "
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          )}
+        </td>
+      ) : (
+        ""
+      )}
+      {record.attendance || record.attendance === 0 ? null : (
         <td className="border-collapse border-2 border-black text-center">
           <input
             name="attendance"
-            id={resident._id}
+            id={resident.name}
             rid={record._id}
             type={"number"}
             className="text-black w-full"
@@ -217,6 +204,22 @@ const TableRow = ({ resident, record, render, users }) => {
       ) : record.paid ? (
         <td className="border-collapse border-2 border-black text-center">
           {dayjs(record.collectionDate).format("DD/MM/YYYY")}
+        </td>
+      ) : null}
+      {(record.ebill || record.ebill === 0) && !record.paid ? (
+        <td className="border-collapse border-2 border-black text-center">
+          <input
+            name="info"
+            id={record._id}
+            type={"text"}
+            value={info}
+            onInput={(e) => setInfo(e.target.value)}
+            className="text-black w-min text-2xl"
+          />
+        </td>
+      ) : record.paid ? (
+        <td className="border-collapse border-2 border-black text-center uppercase px-4">
+          {record.info ? record.info : "-"}
         </td>
       ) : null}
       {record.ebill || record.ebill === 0 ? (

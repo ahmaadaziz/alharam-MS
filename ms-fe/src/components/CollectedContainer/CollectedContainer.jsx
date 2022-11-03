@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import Collected from "../Collected/Collected";
 import axios from "axios";
 
-const CollectedContainer = ({ id }) => {
+const CollectedContainer = ({ id, setRender, render }) => {
   const [collected, setCollected] = useState([]);
-  const [render, setRender] = useState(false);
   useEffect(() => {
     const GetTabs = () => {
       axios
@@ -31,7 +30,13 @@ const CollectedContainer = ({ id }) => {
             Amount
           </th>
           <th className="border-collapse border-2 border-black text-left p-2 text-2xl ">
+            Info
+          </th>
+          <th className="border-collapse border-2 border-black text-left p-2 text-2xl ">
             Amount Paid
+          </th>
+          <th className="border-collapse border-2 border-black text-left p-2 text-2xl ">
+            Difference
           </th>
         </tr>
       </thead>

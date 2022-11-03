@@ -1,9 +1,10 @@
 import { useState } from "react";
 import axios from "axios";
 
-const AddTab = ({ id }) => {
+const AddTab = ({ id, setRender }) => {
   const [title, setTitle] = useState("");
   const [amount, setAmount] = useState("");
+  const [info, setInfo] = useState("");
 
   const HandleSubmit = (e) => {
     e.preventDefault();
@@ -14,6 +15,7 @@ const AddTab = ({ id }) => {
           title,
           amount,
           owner: id,
+          info,
         },
         {
           headers: {
@@ -25,6 +27,7 @@ const AddTab = ({ id }) => {
       .then((res) => {
         if (res.status === 200) {
           window.alert("Added");
+          setRender((current) => !current);
         }
       })
       .catch((error) => console.log(error));
@@ -50,6 +53,14 @@ const AddTab = ({ id }) => {
         id="amount"
         value={amount}
         onChange={(e) => setAmount(e.target.valueAsNumber)}
+      />
+      <label htmlFor="info">Info</label>
+      <input
+        className="text-black text-2xl"
+        type={"text"}
+        id="info"
+        value={info}
+        onChange={(e) => setInfo(e.target.value)}
       />
       <input
         className="px-5 py-2 text-2xl border-2 bg-black text-white uppercase mr-5 cursor-pointer m-2 "

@@ -5,31 +5,12 @@ import Navbar from "../components/Navbar/Navbar";
 import TableContainer from "../components/TableContainer/TableContainer";
 import axios from "axios";
 
-const dayjs = require("dayjs");
-var isSameOrAfter = require("dayjs/plugin/isSameOrAfter");
-dayjs.extend(isSameOrAfter);
-
 const Home = () => {
   const { SetAllUsers } = useContext(GlobalContext);
   const [records, setRecords] = useState([[]]);
   const [render, setRender] = useState(true);
   const [showNavbar, setShowNavbar] = useState(true);
   const [navbarRes, setNavbarRes] = useState(true);
-
-  const CreateRecords = () => {
-    axios
-      .post(
-        `${process.env.REACT_APP_API_URL}records/create`,
-        {},
-        {
-          headers: {
-            Authorization: "Bearer " + localStorage.getItem("token"),
-          },
-          withCredentials: true,
-        }
-      )
-      .then((res) => setRender((current) => !current));
-  };
 
   useEffect(() => {
     const ChangeNavbar = () => {
@@ -117,17 +98,6 @@ const Home = () => {
               />
             </svg>
           )}
-        </button>
-      ) : null}
-      {dayjs().isSameOrAfter(
-        `${dayjs().get("year")}-${dayjs().get("month") + 1}-25`,
-        "day"
-      ) ? (
-        <button
-          className="px-5 py-3 text-[2rem] border-2 bg-green-700 text-white uppercase m-5 msm:mr-5 "
-          onClick={() => CreateRecords()}
-        >
-          Create Records
         </button>
       ) : null}
       <div className="flex flex-col-reverse">

@@ -8,6 +8,7 @@ import axios from "axios";
 const UserPage = () => {
   const { id } = useParams();
   const [user, setUser] = useState({});
+  const [render, setRender] = useState(false);
 
   useEffect(() => {
     const GetUser = () => {
@@ -39,10 +40,18 @@ const UserPage = () => {
           </p>
 
           <div className="overflow-x-auto ">
-            {user._id ? <CollectedContainer id={user._id} /> : null}
+            {user._id ? (
+              <CollectedContainer
+                id={user._id}
+                setRender={setRender}
+                render={render}
+              />
+            ) : null}
           </div>
         </div>
-        <div>{user._id ? <AddTab id={user._id} /> : null}</div>
+        <div>
+          {user._id ? <AddTab id={user._id} setRender={setRender} /> : null}
+        </div>
       </div>
     </div>
   );

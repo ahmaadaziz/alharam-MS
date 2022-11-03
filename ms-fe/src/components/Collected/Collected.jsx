@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 
 const Collected = ({ data, setRender }) => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState("");
 
   const handleClick = () => {
     axios
@@ -43,15 +43,25 @@ const Collected = ({ data, setRender }) => {
         {data?.record?.totalBill ? data?.record?.totalBill : data?.amount}
       </td>
       <td className="border-collapse border-2 border-black text-center">
+        {data?.record?.info
+          ? data?.record?.info
+          : data?.info
+          ? data?.info
+          : "-"}
+      </td>
+      <td className="border-collapse border-2 border-black text-center">
         {data?.amountPaid ? data?.amountPaid : "-"}
+      </td>
+      <td className="border-collapse border-2 border-black text-center">
+        {data?.diff ? data?.diff : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
         <input
           className="text-black p-2 w-max"
           value={amount}
-          type="number"
+          type={"text"}
           id="amount"
-          onChange={(e) => setAmount(e.target.valueAsNumber)}
+          onChange={(e) => setAmount(e.target.value)}
         />
       </td>
       <td className="border-collapse border-2 border-black text-center">
