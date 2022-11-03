@@ -116,7 +116,7 @@ router.post("/residents/calculateBill", auth, async (req, res) => {
       room.totalAttendance = 0;
       room.residents.forEach((res) => {
         for (let i = 0; i < req.body.values.length; i++) {
-          if (req.body.values[i].name === res.name) {
+          if (req.body.values[i]._id === res._id) {
             res.records[res.records.length - 1].arrears =
               res.records[res.records.length - 2].nxtArrears;
             res.records[res.records.length - 1].fine = res.records[
@@ -126,7 +126,7 @@ router.post("/residents/calculateBill", auth, async (req, res) => {
               : 0;
             res.records[res.records.length - 1].attendance =
               req.body.values[i].attendance;
-            room.total += req.body.values[i].attendance;
+            room.totalAttendance += req.body.values[i].attendance;
             break;
           }
         }
