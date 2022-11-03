@@ -119,7 +119,7 @@ const TableRow = ({ resident, record, render, users }) => {
         <td className="border-collapse border-2 border-black text-center">
           <input
             name="attendance"
-            id={resident.name}
+            id={resident._id}
             rid={record._id}
             type={"number"}
             className="text-black w-full"

@@ -14,7 +14,7 @@ const TableContainer = ({ table, render }) => {
     const rids = [];
     for (let index = 0; index < e.target.elements.length - 1; index++) {
       values.push({
-        name: e.target.elements[index].id,
+        id: e.target.elements[index].id,
         attendance: +e.target.elements[index].value,
       });
     }
