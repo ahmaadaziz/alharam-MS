@@ -11,6 +11,7 @@ router.post("/tabs", auth, async (req, res) => {
       title: req.body.title,
       amount: req.body.amount,
       owner: req.body.owner,
+      ...(req.body.info && { info: req.body.info }),
     });
     const user = await User.findById(req.body.owner);
     user.tabs.push(newTab._id);
@@ -28,7 +29,7 @@ router.post("/tabs/update", auth, async (req, res) => {
     const tab = await Tab.findById(req.body.id);
     if (tab.record) {
       const record = await Record.findById(tab.record);
-      const diff = record.totalBill - (req.body.amount + tab.amountPaid);
+      const diff = record.totalBill + (+req.body.amount + tab.amountPaid);
       if (diff === 0) {
         const user = await User.findById(tab.owner);
         user.tabs = user.tabs.filter((tab) => tab !== req.body.id);
@@ -36,19 +37,21 @@ router.post("/tabs/update", auth, async (req, res) => {
         user.save();
         record.save();
         tab.delete();
-      } else {
-        tab.amountPaid += req.body.amount;
+      } else if (!(diff > record.totalBill)) {
+        tab.amountPaid += +req.body.amount;
+        tab.diff = diff;
         tab.save();
       }
     } else {
-      const diff = tab.amount - (req.body.amount + tab.amountPaid);
+      const diff = tab.amount + (+req.body.amount + tab.amountPaid);
       if (diff === 0) {
         const user = await User.findById(tab.owner);
         user.tabs = user.tabs.filter((tab) => tab !== req.body.id);
         user.save();
         tab.delete();
       } else {
-        tab.amountPaid += req.body.amount;
+        tab.amountPaid += +req.body.amount;
+        tab.diff = diff;
         tab.save();
       }
     }
@@ -61,10 +64,10 @@ router.post("/tabs/update", auth, async (req, res) => {
 
 router.get("/tabs/:id", auth, async (req, res) => {
   try {
-    const user = await Tab.find({
+    const tab = await Tab.find({
       owner: req.params.id,
     }).populate({ path: "record", populate: { path: "owner" } });
-    res.status(200).json(user);
+    res.status(200).json(tab);
   } catch (e) {
     console.log(e);
     res.status(400).send(e);
