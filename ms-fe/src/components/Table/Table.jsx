@@ -23,25 +23,19 @@ const Table = ({ data, render }) => {
           <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
             Package
           </th>
-          <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
-            Arrears
-          </th>
-          <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
-            Fine
-          </th>
-          {data[0]?.ebill || data[0]?.ebill === 0 ? (
-            ""
-          ) : (
-            <th className="border-collapse border-2 border-black text-center p-2 text-2xl">
-              UPS
-            </th>
-          )}
-          {data[0]?.ebill || data[0]?.ebill === 0 ? (
-            ""
-          ) : (
+          {data[0]?.attendance ? (
             <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
-              Wapda
+              Arrears
             </th>
+          ) : (
+            ""
+          )}
+          {data[0]?.attendance ? (
+            <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
+              Fine
+            </th>
+          ) : (
+            ""
           )}
           {data[0]?.ebill || data[0]?.ebill === 0 ? (
             ""
@@ -84,6 +78,13 @@ const Table = ({ data, render }) => {
           {data[0]?.ebill || data[0]?.ebill === 0 ? (
             <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
               Date
+            </th>
+          ) : (
+            ""
+          )}
+          {data[0]?.ebill || data[0]?.ebill === 0 ? (
+            <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
+              Info
             </th>
           ) : (
             ""

@@ -107,63 +107,48 @@ router.post("/residents/clearance", auth, async (req, res) => {
 
 router.post("/residents/calculateBill", auth, async (req, res) => {
   try {
-    const values = req.body.values;
-    for (const value of values) {
-      const resident = await Resident.findById(value.id).populate([
-        "records",
-        "room",
-      ]);
-      var totalAttendance = value.attendance;
-      for (const valueAtt of values) {
-        const otherRecord = await Record.findById(valueAtt.rid).populate({
-          path: "owner",
-          populate: { path: "room", select: "number" },
-        });
-        if (
-          otherRecord.owner.name !== resident.name &&
-          otherRecord.owner.room.number === resident.room.number
-        ) {
-          totalAttendance += valueAtt.attendance;
+    const rooms = await Room.find({}).populate([
+      { path: "residents", populate: { path: "records" } },
+    ]);
+    // const records = await Record.find({_id: {$in: req.body.rids}}).populate({path: "owner", populate: { path: "room", select: "totalAttendance" }})
+    const records = [];
+    rooms.forEach((room) => {
+      room.totalAttendance = 0;
+      room.residents.forEach((res) => {
+        for (let i = 0; i < req.body.values.length; i++) {
+          if (req.body.values[i].name === res.name) {
+            res.records[res.records.length - 1].arrears =
+              res.records[res.records.length - 2].nxtArrears;
+            res.records[res.records.length - 1].fine = res.records[
+              res.records.length - 2
+            ].nxtFine
+              ? res.records[res.records.length - 2].nxtFine
+              : 0;
+            res.records[res.records.length - 1].attendance =
+              req.body.values[i].attendance;
+            room.total += req.body.values[i].attendance;
+            break;
+          }
         }
-        otherRecord.attendance = valueAtt.attendance;
-        otherRecord.save();
-      }
-      const newRecord = await Record.findById(value.rid);
-      if (!newRecord) {
-        return res.status(404).send("Record not found");
-      }
-      const room = await Room.findById(resident.room);
-      const { recordValues, roomValues } = newRecord.calculateBill(
-        value.ups,
-        value.wapda,
-        value.attendance,
-        totalAttendance,
-        resident.fee,
-        resident.package,
-        resident.wifi,
-        newRecord.arrears,
-        newRecord.fine,
-        room,
-        newRecord
-      );
-      Object.assign(newRecord, recordValues);
-      newRecord.attendance = value.attendance;
-      if (!dayjs(room.updatedAt).isToday()) {
-        room.ups = value.ups;
-        room.wapda = value.wapda;
-        room.totalMR = roomValues.totalMR;
-        room.overUnits = roomValues.overUnits;
-        room.newMR = roomValues.newMR;
-        room.save();
-      }
-      newRecord.ups = value.ups;
-      newRecord.wapda = value.wapda;
-      newRecord.overUnits = roomValues.overUnits;
-      newRecord.newMR = roomValues.newMR;
-      await newRecord.save();
-    }
-    res.status(200).json("Succesfull");
+      });
+    });
+    rooms.forEach((room) => {
+      room.residents.forEach((resident) => {
+        resident.records[resident.records.length - 1] = Record.calculateBill(
+          room.totalAttendance,
+          resident.fee,
+          resident.package,
+          resident.wifi,
+          resident.records[resident.records.length - 1]
+        );
+        records.push(resident.records[resident.records.length - 1]);
+      });
+    });
+    await Room.bulkSave(rooms);
+    await Record.bulkSave(records);
+    res.status(200).send();
   } catch (error) {
+    console.log(error);
     res.status(400).send(error);
   }
 });

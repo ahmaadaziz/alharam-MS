@@ -19,7 +19,7 @@ const roomSchema = new mongoose.Schema(
     newMR: {
       type: Number,
     },
-    overUnits: {
+    totalAttendance: {
       type: Number,
     },
     seats: {

@@ -49,8 +49,8 @@ router.post("/records/adjustment", auth, async (req, res) => {
     if (!record) {
       return res.status(404).send("Record not found");
     }
-    record.totalBill = record.totalBill - req.body.adjustment;
-    if (record.adjustment > 0) {
+    record.totalBill = record.totalBill + req.body.adjustment;
+    if (record.adjustment) {
       record.adjustment = record.adjustment + req.body.adjustment;
     } else {
       record.adjustment = req.body.adjustment;
@@ -78,6 +78,11 @@ router.post("/records/submit-payment", auth, async (req, res) => {
   const difference = dayjs(req.body.date).diff(dueDate, "day");
   if (difference > 0) {
     record.nxtFine = difference * 30;
+  } else {
+    record.nxtFine = 0;
+  }
+  if (req.body.info) {
+    record.info = req.body.info;
   }
   if (user.name === "akhter aziz") {
     record.collected = true;

@@ -10,24 +10,22 @@ const TableContainer = ({ table, render }) => {
 
   const HandleSubmit = (e) => {
     e.preventDefault();
-    let values = [];
-    for (
-      let index = 0;
-      index < e.target.elements.length - 1;
-      index = index + 3
-    ) {
+    const values = [];
+    const rids = [];
+    for (let index = 0; index < e.target.elements.length - 1; index++) {
       values.push({
-        id: e.target.elements[index].id,
-        rid: e.target.elements[index].attributes.rid.value,
-        ups: +e.target.elements[index].value,
-        wapda: +e.target.elements[index + 1].value,
-        attendance: +e.target.elements[index + 2].value,
+        name: e.target.elements[index].id,
+        attendance: +e.target.elements[index].value,
       });
+    }
+    // console.log(values);
+    for (let index = 0; index < e.target.elements.length - 1; index++) {
+      rids.push(e.target.elements[index].attributes.rid.value);
     }
     axios
       .post(
         `${process.env.REACT_APP_API_URL}residents/calculateBill`,
-        { values: values },
+        { values, rids },
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),

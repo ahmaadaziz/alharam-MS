@@ -11,6 +11,12 @@ const tabSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  diff: {
+    type: Number,
+  },
+  info: {
+    type: String,
+  },
   owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   record: { type: mongoose.Schema.Types.ObjectId, ref: "Record" },
 });
