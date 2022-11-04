@@ -27,9 +27,6 @@ const ResidentTable = ({ data }) => {
             Wapda
           </th>
           <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
-            New MR
-          </th>
-          <th className="border-collapse border-2 border-black text-left p-2 text-2xl">
             Over Units
           </th>
           <th className="border-collapse border-2 border-black text-left p-2 text-2xl">

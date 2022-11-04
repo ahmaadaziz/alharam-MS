@@ -18,14 +18,10 @@ const TableContainer = ({ table, render }) => {
         attendance: +e.target.elements[index].value,
       });
     }
-    // console.log(values);
-    for (let index = 0; index < e.target.elements.length - 1; index++) {
-      rids.push(e.target.elements[index].attributes.rid.value);
-    }
     axios
       .post(
         `${process.env.REACT_APP_API_URL}residents/calculateBill`,
-        { values, rids },
+        { values },
         {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
