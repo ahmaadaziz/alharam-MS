@@ -19,8 +19,6 @@ const Rooms = () => {
       index < e.target.elements.length - 1;
       index = index + 2
     ) {
-      console.log(typeof +e.target.elements[index].value);
-      console.log(typeof +e.target.elements[index + 1].value);
       values.push({
         id: +e.target.elements[index].id,
         wapda: +e.target.elements[index].value,

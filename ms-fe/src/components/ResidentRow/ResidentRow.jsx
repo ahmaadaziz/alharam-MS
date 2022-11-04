@@ -12,43 +12,40 @@ const ResidentRow = ({ record }) => {
         {dayjs(record.createdAt).format("MMMM, YYYY")}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.arrears ? record.arrears : "N/A"}
+        {record.arrears || record.arrears === 0 ? record.arrears : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
         {record.nxtArrears ? record.nxtArrears : "N/A"}
       </td>
       <td className="border-collapse border-2 border-black text-center px-2 text-xl">
-        {record.fine ? record.fine : "N/A"}
+        {record.fine || record.fine === 0 ? record.fine : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center px-2 text-xl">
         {record.nxtFine ? record.nxtFine : "N/A"}
       </td>
       <td className="border-collapse border-2 border-black text-center min-w-min">
-        {record.ups ? record.ups : "N/A"}
+        {record.ups ? record.ups : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.wapda ? record.wapda : "N/A"}
+        {record.wapda ? record.wapda : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.newMR ? record.newMR : "N/A"}
+        {record.overUnits ? record.overUnits : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.overUnits ? record.overUnits : "N/A"}
-      </td>
-      <td className="border-collapse border-2 border-black text-center">
-        {record.attendance ? record.attendance : "N/A"}
+        {record.attendance ? record.attendance : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
         {record.ebill || record.ebill === 0 ? record.ebill : "TBC"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.pkgAdj ? record.pkgAdj : "N/A"}
+        {record.pkgAdj ? record.pkgAdj : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.adjustment ? record.adjustment : "N/A"}
+        {record.adjustment ? record.adjustment : "-"}
       </td>
       <td className="border-collapse border-2 border-black text-center">
-        {record.totalBill ? record.totalBill : "N/A"}
+        {record.totalBill ? record.totalBill : "-"}
       </td>
       {record.paid ? (
         <td className="border-collapse border-2 border-black text-center">
