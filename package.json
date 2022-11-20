@@ -11,7 +11,8 @@
     "seedRecords": "cross-env NODE_ENV=development node src/seeder/SeedRecords.js",
     "reactInstall": "npm --prefix ./ms-fe/ install",
     "reactBuild": "npm --prefix ./ms-fe/ run build",
-    "heroku-postbuild": "npm run reactInstall && npm run reactBuild"
+    "heroku-postbuild": "npm run reactInstall && npm run reactBuild",
+    "build": "npm run reactInstall && npm run reactBuild"
   },
   "author": "Ahmad Aziz",
   "license": "ISC",
