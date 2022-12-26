@@ -98,9 +98,11 @@ const Fee = () => {
           className="flex flex-row justify-evenly items-center"
         >
           <style type="text/css" media="print">
-            {"\
-  @page { size: portrait; }\
-"}
+            {
+              "\
+  @page { size: landscape; }\
+"
+            }
           </style>
           <FeeTable copy="Office" record={record} />
           <FeeTable copy="Depositor's" record={record} />
